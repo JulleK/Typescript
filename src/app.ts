@@ -1,34 +1,15 @@
-class Person {
-  // name: string;
-  hobbies: string[] = [];
+class Department {
+  protected employees: string[] = [];
 
-  constructor(private name: string) {}
-
-  greet(this: Person) {
-    console.log("hello " + this.name);
-  }
-
-  addHobby(hobby: string) {
-    this.hobbies.push(hobby);
-  }
-
-  printHobbies() {
-    console.log(this.hobbies);
-  }
-
-  private printName() {
-    console.log(this.name);
-  }
+  constructor(private readonly id: string, public name: string) {}
 }
 
-const max = new Person("max");
+class ITDepartment extends Department {
+  constructor(id: string) {
+    super(id, "IT");
+  }
 
-max.greet();
-max.addHobby("programming");
-
-max.hobbies[1] = "hacking";
-max.printHobbies();
-
-// const maxCopy = { greet: max.greet };
-
-// maxCopy.greet();
+  printEmployees() {
+    console.log(this.employees);
+  }
+}
