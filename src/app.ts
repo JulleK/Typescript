@@ -1,18 +1,68 @@
-interface Named {
-  name?: string;
-  outputName?: string;
-  //   greet: (name: string) => void;
-}
+type Admin = {
+  name: string;
+  privileges: string[];
+};
 
-class Person implements Named {
-  name?: string;
-  age = 30;
+type Employee = {
+  name: string;
+  startDate: Date;
+};
 
-  constructor(name: string) {
-    if (name) this.name = name;
+type ElevatedEmployee = Admin & Employee;
+type UnknownEmployee = Admin | Employee;
+
+const e1: ElevatedEmployee = {
+  name: "julek",
+  privileges: ["create-server"],
+  startDate: new Date(),
+};
+
+function printEmployeeInformation(emp: UnknownEmployee) {
+  console.log("name: " + emp.name);
+
+  if ("privileges" in emp) {
+    console.log("privileges: " + emp.privileges);
   }
 
-  //   greet(phrase: string): void {
-  //     console.log(phrase + " " + this.name);
-  //   }
+  if ("startDate" in emp) {
+    console.log("start date: " + emp.startDate);
+  }
+}
+
+type Combinable = string | number;
+type Numeric = number | boolean;
+
+type Universal = Combinable & Numeric;
+
+function add(a: Combinable, b: Combinable) {
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
+  }
+  return a + b;
+}
+
+class Car {
+  drive() {
+    console.log("Driving...");
+  }
+}
+
+class Truck {
+  drive() {
+    console.log("Driving a truck...");
+  }
+
+  loadCargo(amount: number) {
+    console.log(`loading ${amount} cargo`);
+  }
+}
+
+type Vehicle = Car | Truck;
+
+const v1 = new Car();
+const v2 = new Truck();
+
+function useVehicle(vehicle: Vehicle) {
+  vehicle.drive();
+  if (vehicle instanceof Truck) vehicle.loadCargo(100);
 }
