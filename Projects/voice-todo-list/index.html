@@ -7,8 +7,20 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <label for="task-input">Add a task</label>
-    <input type="text" name="task" id="task-input" />
+    <form>
+      <input
+        type="text"
+        name="task"
+        id="task-input"
+        autofocus
+        placeholder="write a task"
+      />
+      <button id="task-add-btn">Add task</button>
+    </form>
+
+    <button id="task-voice-btn">Add with voice</button>
+
+    <ul id="task-list"></ul>
 
     <script src="app.js"></script>
   </body>
