@@ -24,7 +24,7 @@ function addTask(text) {
     displayTasks();
 }
 function displayTasks() {
-    console.log(tasks);
+    // console.log(tasks);
     taskList.innerHTML = "";
     tasks.forEach((task) => {
         const div = document.createElement("div");
@@ -65,35 +65,36 @@ function deleteTask(id) {
     }
     displayTasks();
 }
-// -- CHAT GPT --
-// Voice Command Integration
-// function addTaskWithVoice() {
-//   // Check if browser supports SpeechRecognition
-//   const SpeechRecognition =
-//     (window as any).SpeechRecognition ||
-//     (window as any).webkitSpeechRecognition;
-//   if (!SpeechRecognition) {
-//     alert("Speech Recognition is not supported in your browser.");
-//     return;
-//   }
-//   const recognition = new SpeechRecognition();
-//   recognition.lang = "en-US"; // Set language to English
-//   recognition.interimResults = false; // Don't process interim results
-//   recognition.maxAlternatives = 1;
-//   recognition.start();
-//   recognition.onstart = () => {
-//     console.log("Voice recognition started. Speak now...");
-//   };
-//   recognition.onresult = (event: SpeechRecognitionEvent) => {
-//     const transcript = event.results[0][0].transcript;
-//     console.log(`Recognized: ${transcript}`);
-//     addTask(transcript); // Add recognized text as a task
-//   };
-//   recognition.onspeechend = () => {
-//     recognition.stop();
-//   };
-//   recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-//     console.error("Speech recognition error:", event.error);
-//   };
-// }
+const speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+try {
+    var recognition = new speechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false; // Don't process interim results
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => {
+        console.log("Voice recognition started. Speak now...");
+    };
+    recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        console.log(`Received text: ${transcript}`);
+        addTask(transcript);
+    };
+    recognition.onspeechend = () => {
+        recognition.stop();
+    };
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+    };
+}
+catch (error) {
+    console.log(error);
+    console.log("Speech Recognition is not supported in your browser.");
+}
+function addTaskWithVoice() {
+    if (!speechRecognition || !recognition) {
+        alert("Speech Recognition is not supported in your browser.");
+        return;
+    }
+    recognition.start();
+}
 //# sourceMappingURL=app.js.map
