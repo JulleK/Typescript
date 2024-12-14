@@ -43,11 +43,24 @@ function Log(target, propertyName) {
     console.log(target);
     console.log(propertyName);
 }
+function Log2(target, name, descriptor) {
+    console.log("Accessor decorator!");
+    console.log(target);
+    console.log(name);
+    console.log(descriptor);
+}
+function Log3(target, name, descriptor) {
+    console.log("Method decorator!");
+    console.log(target);
+    console.log(name);
+    console.log(descriptor);
+}
 class Product {
     constructor(t, p) {
         this.title = t;
         this._price = p;
     }
+    // @Log2
     set price(value) {
         if (value > 0)
             this._price = value;
@@ -57,7 +70,7 @@ class Product {
     }
 }
 __decorate([
-    Log
-], Product.prototype, "title", void 0);
+    Log3
+], Product.prototype, "getPriceWithTax", null);
 // console.log(pers);
 //# sourceMappingURL=app.js.map
