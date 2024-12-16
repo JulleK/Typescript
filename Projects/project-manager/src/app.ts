@@ -1,3 +1,37 @@
+interface validatable {
+  value: string | number;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+}
+
+function validate(input: validatable) {
+  const {
+    value,
+    required,
+    minLength = 0,
+    maxLength = 30,
+    min = 0,
+    max = 10,
+  } = input;
+
+  if (!value.toString().trim() && required) return false;
+
+  if (typeof value === "string") {
+    const length = value.trim().length;
+    if (length < minLength || length > maxLength) return false;
+  }
+
+  if (typeof value === "number") {
+    if (value < min || value > max) return false;
+  }
+
+  console.log("valid input");
+  return true;
+}
+
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   targetElement: HTMLDivElement;
@@ -40,7 +74,11 @@ class ProjectInput {
     const userDescription = this.descriptionInputElement.value;
     const userPeople = this.peopleInputElement.value;
 
-    if (!userTitle.trim() || !userDescription.trim() || !userPeople.trim()) {
+    if (
+      !validate({ value: userTitle, required: true, minLength: 3 }) ||
+      !validate({ value: userDescription, required: true, minLength: 5 }) ||
+      !validate({ value: +userPeople, required: true, min: 1 })
+    ) {
       alert("Invalid input, please try again!");
       return;
     }
