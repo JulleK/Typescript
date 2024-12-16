@@ -12,12 +12,16 @@ function Logger(logString) {
     };
 }
 function WithTemplate(hookId) {
-    return function (constructor) {
-        const p = new constructor();
-        const element = document.getElementById(hookId);
-        if (element) {
-            element.innerHTML = p.name;
-        }
+    return function (originalConstructor) {
+        return class extends originalConstructor {
+            constructor(...args) {
+                super();
+                const element = document.getElementById(hookId);
+                if (element) {
+                    element.innerHTML = this.name;
+                }
+            }
+        };
     };
 }
 function FirstDecorator() {
@@ -30,14 +34,16 @@ function SecondDecorator() {
 }
 // @SecondDecorator()
 // @FirstDecorator()
-// @WithTemplate("app")
-class Person {
+let Person = class Person {
     constructor() {
         this.name = "julek";
         console.log("Creating a person...");
     }
-}
-// const pers = new Person();
+};
+Person = __decorate([
+    WithTemplate("app")
+], Person);
+const pers = new Person();
 function Log(target, propertyName) {
     console.log("Property decorator");
     console.log(target);
@@ -65,12 +71,10 @@ class Product {
         if (value > 0)
             this._price = value;
     }
+    // @Log3
     getPriceWithTax(tax) {
         return this._price * (1 + tax);
     }
 }
-__decorate([
-    Log3
-], Product.prototype, "getPriceWithTax", null);
 // console.log(pers);
 //# sourceMappingURL=app.js.map

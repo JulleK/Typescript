@@ -6,12 +6,18 @@ function Logger(logString: string) {
 }
 
 function WithTemplate(hookId: string) {
-  return function (constructor: any) {
-    const p = new constructor();
-    const element = document.getElementById(hookId);
-    if (element) {
-      element.innerHTML = p.name;
-    }
+  return function <T extends { new (...args: any[]): { name: string } }>(
+    originalConstructor: T
+  ) {
+    return class extends originalConstructor {
+      constructor(...args: any[]) {
+        super();
+        const element = document.getElementById(hookId);
+        if (element) {
+          element.innerHTML = this.name;
+        }
+      }
+    };
   };
 }
 
@@ -27,7 +33,7 @@ function SecondDecorator() {
 
 // @SecondDecorator()
 // @FirstDecorator()
-// @WithTemplate("app")
+@WithTemplate("app")
 class Person {
   name = "julek";
 
@@ -36,7 +42,7 @@ class Person {
   }
 }
 
-// const pers = new Person();
+const pers = new Person();
 
 function Log(target: any, propertyName: string | Symbol) {
   console.log("Property decorator");
@@ -73,7 +79,7 @@ class Product {
     if (value > 0) this._price = value;
   }
 
-  @Log3
+  // @Log3
   getPriceWithTax(tax: number) {
     return this._price * (1 + tax);
   }
