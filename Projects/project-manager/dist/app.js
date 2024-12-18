@@ -1,17 +1,27 @@
 "use strict";
-// Project State Management
+// Project Type
+var ProjectStatus;
+(function (ProjectStatus) {
+    ProjectStatus[ProjectStatus["Active"] = 0] = "Active";
+    ProjectStatus[ProjectStatus["Finished"] = 1] = "Finished";
+})(ProjectStatus || (ProjectStatus = {}));
+class Project {
+    constructor(id, title, description, people, status) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.people = people;
+        this.status = status;
+    }
+}
 class ProjectState {
     constructor() {
         this.projects = [];
         this.listeners = [];
     }
     addProject(title, description, numOfPeople) {
-        const newProject = {
-            id: Math.random().toString(),
-            title,
-            description,
-            numOfPeople,
-        };
+        const id = Math.random().toString();
+        const newProject = new Project(id, title, description, numOfPeople, ProjectStatus.Active);
         this.projects.push(newProject);
         for (const listenerFn of this.listeners) {
             listenerFn(this.projects.slice());
@@ -54,7 +64,13 @@ class ProjectList {
         this.element = importedNode.firstElementChild;
         this.element.id = `${this.type}-projects`;
         projectState.addListener((projects) => {
-            this.assignedProjects = projects;
+            const relevantProjects = projects.filter((project) => {
+                return this.type === "active"
+                    ? project.status === ProjectStatus.Active
+                    : project.status === ProjectStatus.Finished;
+            });
+            // this.assignedProjects = projects;
+            this.assignedProjects = relevantProjects;
             this.renderProjects();
         });
         this.attach();
@@ -62,6 +78,7 @@ class ProjectList {
     }
     renderProjects() {
         const listElement = (document.getElementById(`${this.type}-projects-list`));
+        listElement.innerHTML = "";
         for (const prjItem of this.assignedProjects) {
             const listItem = document.createElement("li");
             listItem.textContent = prjItem.title;
