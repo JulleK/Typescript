@@ -137,14 +137,19 @@ class ProjectList extends Component {
         this.configure();
         this.renderContent();
     }
-    renderProjects() {
-        const listElement = (document.getElementById(`${this.type}-projects-list`));
-        listElement.innerHTML = "";
-        for (const prjItem of this.assignedProjects) {
-            new ProjectItem(listElement.id, prjItem);
-        }
+    dragOverHandler(event) {
+        const listElement = this.element.querySelector("ul");
+        listElement.classList.add("droppable");
     }
+    dragLeaveHandler(event) {
+        const listElement = this.element.querySelector("ul");
+        listElement.classList.remove("droppable");
+    }
+    dropHandler(event) { }
     configure() {
+        this.element.addEventListener("dragover", this.dragOverHandler);
+        this.element.addEventListener("dragleave", this.dragLeaveHandler);
+        this.element.addEventListener("drop", this.dropHandler);
         projectState.addListener((projects) => {
             const relevantProjects = projects.filter((project) => {
                 return this.type === "active"
@@ -155,6 +160,13 @@ class ProjectList extends Component {
             this.renderProjects();
         });
     }
+    renderProjects() {
+        const listElement = (document.getElementById(`${this.type}-projects-list`));
+        listElement.innerHTML = "";
+        for (const prjItem of this.assignedProjects) {
+            new ProjectItem(listElement.id, prjItem);
+        }
+    }
     renderContent() {
         const listId = `${this.type}-projects-list`;
         this.element.querySelector("ul").id = listId;
@@ -162,6 +174,12 @@ class ProjectList extends Component {
             this.type.toUpperCase() + " PROJECTS";
     }
 }
+__decorate([
+    autobind
+], ProjectList.prototype, "dragOverHandler", null);
+__decorate([
+    autobind
+], ProjectList.prototype, "dragLeaveHandler", null);
 // Project Input Class
 class ProjectInput extends Component {
     constructor() {
