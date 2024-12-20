@@ -68,6 +68,18 @@ class ProjectState extends State<Project> {
       ProjectStatus.Active
     );
     this.projects.push(newProject);
+    this.updateListeners();
+  }
+
+  moveProject(id: string, newStatus: ProjectStatus) {
+    const project = this.projects.find((project) => project.id === id);
+    if (project && project.status !== newStatus) {
+      project.status = newStatus;
+      this.updateListeners();
+    }
+  }
+
+  private updateListeners() {
     for (const listenerFn of this.listeners) {
       listenerFn(this.projects.slice());
     }
@@ -114,7 +126,6 @@ function validate(input: validatable) {
     if (value < min || value > max) return false;
   }
 
-  console.log("valid input");
   return true;
 }
 
@@ -179,13 +190,12 @@ class ProjectItem
 
   @autobind
   dragStartHandler(event: DragEvent) {
-    console.log("drag start");
+    event.dataTransfer!.setData("text/plain", this.project.id);
+    event.dataTransfer!.effectAllowed = "move";
   }
 
   @autobind
-  dragEndHandler(event: DragEvent) {
-    console.log("drag end");
-  }
+  dragEndHandler(event: DragEvent) {}
 
   configure() {
     this.element.addEventListener("dragstart", this.dragStartHandler);
@@ -218,8 +228,11 @@ class ProjectList
 
   @autobind
   dragOverHandler(event: DragEvent) {
-    const listElement = this.element.querySelector("ul")!;
-    listElement.classList.add("droppable");
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      event.preventDefault();
+      const listElement = this.element.querySelector("ul")!;
+      listElement.classList.add("droppable");
+    }
   }
 
   @autobind
@@ -228,7 +241,14 @@ class ProjectList
     listElement.classList.remove("droppable");
   }
 
-  dropHandler(event: DragEvent) {}
+  @autobind
+  dropHandler(event: DragEvent) {
+    const projectId = event.dataTransfer!.getData("text/plain");
+    projectState.moveProject(
+      projectId,
+      this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished
+    );
+  }
 
   configure() {
     this.element.addEventListener("dragover", this.dragOverHandler);
